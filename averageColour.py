@@ -44,7 +44,7 @@ def createColourBars(aveArray, folder, total=0):
   # Keep same aspect ration for all generated images
   height = total / 2
 
-  out = Image.new('RGB', [total, height], (0, 0, 0))
+  out = Image.new('RGB', [total, height])
 
   bars = ImageDraw.Draw(out)
   for i, ave in enumerate(aveArray):
@@ -63,10 +63,7 @@ def readFramesFolder(folder):
   print("Creating Average Array")
   framesFolder = folder + '/frames'
 
-  total = 0
-  for file in os.listdir(framesFolder):
-    if not file.startswith("."):
-      total += 1
+  total = len([file for file in os.listdir(framesFolder) if not file.startswith('.')])
 
   aveArray = []
   for i, file in enumerate(os.listdir(framesFolder)):
@@ -83,18 +80,32 @@ def readFramesFolder(folder):
   createColourBars(aveArray, folder, total)
 
 
-def splitVideo(filename):
+def splitVideo(outFolder, filename, startNum):
+  subprocess.check_call(
+      './makeFrames.sh --outFolder {} --video {} --start {}'.format(outFolder, filename, startNum), shell=True)
+
+
+def processVideoDir(filename):
   foldername = re.split('\\.|\\/', filename)[1].title()
   outFolder = 'output/' + foldername
-  subprocess.check_call(
-      './makeFrames.sh --outFolder {} --video {}'.format(outFolder, filename), shell=True)
+  startNum = 0
+
+  if os.path.isdir(filename):
+    for i, file in enumerate(os.listdir(filename)):
+      if not file.startswith('.'):
+        splitVideo(outFolder, filename + '/' + file, startNum)
+        startNum = len([file for file in os.listdir(
+            outFolder + '/frames') if not file.startswith('.')])
+
+  else:
+    splitVideo(outFolder, filename, startNum)
 
   readFramesFolder(outFolder)
 
 
 if __name__ == '__main__':
   if len(sys.argv) > 1 and ('-v' in sys.argv):
-    splitVideo(sys.argv[2])
+    processVideoDir(sys.argv[2])
 
   elif len(sys.argv) > 1 and ('-f' in sys.argv):
     readFramesFolder('output/frames')

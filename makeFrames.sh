@@ -5,6 +5,7 @@ echo "Splitting Frames"
 while [[ "$#" > 1 ]]; do case $1 in
     --outFolder) outFolder="$2";;
     --video) video="$2";;
+    --start) start="$2";;
     *) break;;
   esac; shift; shift
 done
@@ -18,6 +19,6 @@ if [ ! -d $outFolder ] ; then
   mkdir $outFolder/frames
 fi
 
-ffmpeg -i $video -r 0.4 $outFolder/frames/image-%06d.jpeg &> /dev/null
+ffmpeg -i $video -r 0.4 -start_number $start $outFolder/frames/image-%06d.jpeg &> /dev/null
 
 echo "Done Frame Splitting"
