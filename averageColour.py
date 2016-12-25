@@ -56,6 +56,10 @@ def createColourBars(aveArray, folder, total=0):
   name = folder.split('/')[1].lower()
   out.save(folder + '/bars_' + name + '.png', 'PNG')
 
+  # Use BiLinear interpolation to resize the image
+  out2 = out.resize((2000, 1000), Image.BILINEAR)
+  out2.save(folder + '/bars2_' + name + '.png')
+
   print('\nDone Picture')
 
 
