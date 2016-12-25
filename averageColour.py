@@ -4,6 +4,7 @@ import os
 import sys
 import subprocess
 import json
+import re
 
 
 def averageFrameColour(frame):
@@ -34,46 +35,54 @@ def averageFrameColour(frame):
   i.close()
 
 
-def createColourBars(aveArray):
+def createColourBars(aveArray, folder, total=0):
   print('Creating Picture')
+  height = 1000
 
-  height = 2000
-  out = Image.new('RGB', [len(aveArray), height], (255, 255, 255))
+  if total == 0:
+    total = len(aveArray)
+
+  out = Image.new('RGB', [total, height], (0, 0, 0))
 
   bars = ImageDraw.Draw(out)
   for i, ave in enumerate(aveArray):
     bars.line((i, 0, i, height), fill=ave)
 
-  out.save('output/bars.png', 'PNG')
+    sys.stdout.write("\rDone bar %d of %d" % (i, total))
+    sys.stdout.flush()
 
-  print('Done Picture')
+  out.save(folder + '/bars.png', 'PNG')
+
+  print('\nDone Picture')
 
 
 def readFramesFolder(folder):
   print("Creating Average Array")
+  framesFolder = folder + '/frames'
 
   total = 0
-  for file in os.listdir(folder):
+  for file in os.listdir(framesFolder):
     if not file.startswith("."):
       total += 1
 
   aveArray = []
-  for i, file in enumerate(os.listdir(folder)):
+  for i, file in enumerate(os.listdir(framesFolder)):
     if not file.startswith("."):
-      aveArray.append(averageFrameColour(folder + '/' + file))
+      aveArray.append(averageFrameColour(framesFolder + '/' + file))
       sys.stdout.write("\rDone %d of %d" % (i, total))
       sys.stdout.flush()
 
-  with open('output/aveArray.json', 'w') as outfile:
+  with open(folder + '/aveArray.json', 'w') as outfile:
     json.dump(aveArray, outfile)
 
   print("\nDone Average Array")
 
-  createColourBars(aveArray)
+  createColourBars(aveArray, folder, total)
 
 
 def splitVideo(filename):
-  outFolder = 'output/frames'
+  foldername = re.split('\\.|\\/', filename)[1].title()
+  outFolder = 'output/' + foldername
   subprocess.check_call(
       './makeFrames.sh --outFolder {} --video {}'.format(outFolder, filename), shell=True)
 
@@ -94,6 +103,8 @@ if __name__ == '__main__':
     aveArray = []
     for array in data:
       aveArray.append(tuple(array))
+
+    print("Generated tuple array")
 
     createColourBars(aveArray)
 

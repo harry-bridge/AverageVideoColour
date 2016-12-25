@@ -15,8 +15,9 @@ fi
 
 if [ ! -d $outFolder ] ; then
   mkdir $outFolder
+  mkdir $outFolder/frames
 fi
 
-ffmpeg -i $video -r 24 $outFolder/image-%06d.jpeg &> /dev/null
+ffmpeg -i $video -r 0.4 $outFolder/frames/image-%06d.jpeg &> /dev/null
 
 echo "Done Frame Splitting"
