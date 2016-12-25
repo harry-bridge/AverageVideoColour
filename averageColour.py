@@ -112,7 +112,8 @@ if __name__ == '__main__':
     processVideoDir(sys.argv[2])
 
   elif len(sys.argv) > 1 and ('-f' in sys.argv):
-    readFramesFolder('output/frames')
+    folder = 'output/' + sys.argv[2]
+    readFramesFolder(folder + 'frames')
 
   elif len(sys.argv) > 1 and ('-a' in sys.argv):
     folder = 'output/' + sys.argv[2]
