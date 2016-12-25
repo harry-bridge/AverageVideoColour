@@ -37,10 +37,12 @@ def averageFrameColour(frame):
 
 def createColourBars(aveArray, folder, total=0):
   print('Creating Picture')
-  height = 1000
 
   if total == 0:
     total = len(aveArray)
+
+  # Keep same aspect ration for all generated images
+  height = total / 2
 
   out = Image.new('RGB', [total, height], (0, 0, 0))
 
@@ -51,7 +53,8 @@ def createColourBars(aveArray, folder, total=0):
     sys.stdout.write("\rDone bar %d of %d" % (i, total))
     sys.stdout.flush()
 
-  out.save(folder + '/bars.png', 'PNG')
+  name = folder.split('/')[1].lower()
+  out.save(folder + '/bars_' + name + '.png', 'PNG')
 
   print('\nDone Picture')
 
@@ -97,7 +100,8 @@ if __name__ == '__main__':
     readFramesFolder('output/frames')
 
   elif len(sys.argv) > 1 and ('-a' in sys.argv):
-    with open('output/aveArray.json') as data_file:
+    folder = 'output/' + sys.argv[2]
+    with open(folder + '/aveArray.json') as data_file:
       data = json.load(data_file)
 
     aveArray = []
@@ -106,7 +110,7 @@ if __name__ == '__main__':
 
     print("Generated tuple array")
 
-    createColourBars(aveArray)
+    createColourBars(aveArray, folder)
 
   else:
     print 'usage: averageColour.py -v VIDEO for an unprocessed video file'
