@@ -2,7 +2,6 @@ from PIL import Image, ImageDraw
 import numpy
 import os
 import sys
-import cv2
 import subprocess
 import json
 
