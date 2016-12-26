@@ -20,6 +20,7 @@ fi
 if [ ! -d $outFolder ] ; then
   mkdir $outFolder
   mkdir $outFolder/frames
+  mkdir $outFolder/images
 fi
 
 echo -e "${YELLOW}Splitting Frames (from" $start")"

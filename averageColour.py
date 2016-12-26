@@ -65,6 +65,7 @@ def displayTimes(times):
 
 def createColourBars(aveArray, folder, total=0):
   print(termcolours.YELLOW + 'Creating Picture' + termcolours.NC)
+  folder = folder + '/images'
 
   if total == 0:
     total = len(aveArray)
@@ -72,9 +73,9 @@ def createColourBars(aveArray, folder, total=0):
   # Keep same aspect ration for all generated images
   height = total / 2
 
-  out = Image.new('RGB', [total, height])
+  baseImage = Image.new('RGBA', [total, height])
 
-  bars = ImageDraw.Draw(out)
+  bars = ImageDraw.Draw(baseImage)
   for i, ave in enumerate(aveArray):
     bars.line((i, 0, i, height), fill=ave)
 
@@ -82,11 +83,11 @@ def createColourBars(aveArray, folder, total=0):
     sys.stdout.flush()
 
   name = folder.split('/')[1].lower()
-  out.save(folder + '/bars_' + name + '.png', 'PNG')
+  baseImage.save(folder + '/rawBars_' + name + '.png', 'PNG')
 
-  # Use BiLinear interpolation to resize the image
-  out2 = out.resize((2000, 1000), Image.NEAREST)
-  out2.save(folder + '/bars2_' + name + '.png')
+  # Use nearest neighbour interpolation to resize the image
+  resizeImage = baseImage.resize((2000, 1000), Image.NEAREST)
+  resizeImage.save(folder + '/resizeBars_' + name + '.png', 'PNG')
 
   # Extra spaces to overwrite previous output
   print(termcolours.GREEN + '\rDone Picture                     ' + termcolours.NC)
@@ -148,7 +149,7 @@ if __name__ == '__main__':
 
   elif len(sys.argv) > 1 and ('-f' in sys.argv):
     folder = 'output/' + sys.argv[2]
-    readFramesFolder(folder + 'frames')
+    readFramesFolder(folder)
 
   elif len(sys.argv) > 1 and ('-a' in sys.argv):
     folder = 'output/' + sys.argv[2]
