@@ -4,11 +4,9 @@ Takes each frame of a given video and compresses its average color into a single
 
 ##Sample Images
 
-####Aladdin - 1992
-<img src="samples/bars2_aladdin.png" />
+<img src="samples/borderedBars_aladdin.png" />
 
-####The Incredibles - 2004
-<img src="samples/bars2_incredibles.png" />
+<img src="samples/borderedBars_incredibles.png" />
 
 
 ##Installation
@@ -40,6 +38,10 @@ You can also remake the image from the json file of frame averages by running, w
 `python averageColour.py -a "videoName"`
 
 This is useful if, for example, you want to change the height of the output image and therefore means you don't have to compute the frame averages again, which can take a while for a long video.
+
+All of these commands take an optional flag `-t`, this is to specify a title that will be shown on the output image, if none is given the titalised form of the input video name will be used, for the test video:
+
+`python averageColour.py -v "video/test.mp4" -t "This Is A Test"`
 
 
 
