@@ -1,6 +1,9 @@
 #!/bin/bash
 
-echo "Splitting Frames"
+YELLOW='\033[93m'
+GREEN='\033[0;32m'
+NC='\033[0m' # No Colour
+
 
 while [[ "$#" > 1 ]]; do case $1 in
     --outFolder) outFolder="$2";;
@@ -19,6 +22,8 @@ if [ ! -d $outFolder ] ; then
   mkdir $outFolder/frames
 fi
 
-ffmpeg -i $video -r 0.4 -start_number $start $outFolder/frames/image-%06d.jpeg &> /dev/null
+echo -e "${YELLOW}Splitting Frames (from" $start")"
 
-echo "Done Frame Splitting"
+ffmpeg -i $video -r 0.4 -start_number $start $outFolder/frames/image-%06d.jpeg -loglevel quiet
+
+echo -e "${GREEN}Done Frame Splitting ${NC}"

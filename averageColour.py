@@ -1,10 +1,23 @@
 from PIL import Image, ImageDraw
+from time import strftime
 import numpy
 import os
 import sys
 import subprocess
 import json
 import re
+import datetime
+
+
+class termcolours:
+  YELLOW = '\033[93m'
+  LRED = '\033[1;31m'
+  GREEN = '\033[0;32m'
+  PURPLE = '\033[0;35m'
+  NC = '\033[0m'  # No Colour
+
+
+times = dict()
 
 
 def averageFrameColour(frame):
@@ -35,8 +48,23 @@ def averageFrameColour(frame):
   i.close()
 
 
+def calculateTimes(inTime, subTime):
+  return str(times[inTime] - times[subTime]).split('.', 2)[0]
+
+
+def displayTimes(times):
+  times['finish'] = datetime.datetime.now()
+
+  print(termcolours.PURPLE + 'Time to split to frames: ' + termcolours.LRED +
+        calculateTimes('processFrames', 'startTime'))
+  print(termcolours.PURPLE + 'Time to average frames: ' +
+        termcolours.LRED + calculateTimes('averageColour', 'processFrames'))
+  print(termcolours.PURPLE + 'Time to create colour timeline: ' +
+        termcolours.LRED + calculateTimes('createBars', 'averageColour') + termcolours.NC)
+
+
 def createColourBars(aveArray, folder, total=0):
-  print('Creating Picture')
+  print(termcolours.YELLOW + 'Creating Picture' + termcolours.NC)
 
   if total == 0:
     total = len(aveArray)
@@ -60,11 +88,15 @@ def createColourBars(aveArray, folder, total=0):
   out2 = out.resize((2000, 1000), Image.BILINEAR)
   out2.save(folder + '/bars2_' + name + '.png')
 
-  print('\nDone Picture')
+  # Extra spaces to overwrite previous output
+  print(termcolours.GREEN + '\rDone Picture                     ' + termcolours.NC)
+
+  times['createBars'] = datetime.datetime.now()
+  displayTimes(times)
 
 
 def readFramesFolder(folder):
-  print("Creating Average Array")
+  print(termcolours.YELLOW + "Creating Average Array" + termcolours.NC)
   framesFolder = folder + '/frames'
 
   total = len([file for file in os.listdir(framesFolder) if not file.startswith('.')])
@@ -79,8 +111,9 @@ def readFramesFolder(folder):
   with open(folder + '/aveArray.json', 'w') as outfile:
     json.dump(aveArray, outfile)
 
-  print("\nDone Average Array")
+  print(termcolours.GREEN + '\rDone Average Array' + termcolours.NC)
 
+  times['averageColour'] = datetime.datetime.now()
   createColourBars(aveArray, folder, total)
 
 
@@ -104,10 +137,12 @@ def processVideoDir(filename):
   else:
     splitVideo(outFolder, filename, startNum)
 
+  times['processFrames'] = datetime.datetime.now()
   readFramesFolder(outFolder)
 
 
 if __name__ == '__main__':
+  times['startTime'] = datetime.datetime.now()
   if len(sys.argv) > 1 and ('-v' in sys.argv):
     processVideoDir(sys.argv[2])
 
@@ -129,7 +164,7 @@ if __name__ == '__main__':
     createColourBars(aveArray, folder)
 
   else:
-    print 'usage: averageColour.py -v VIDEO for an unprocessed video file'
+    print '\nusage: averageColour.py -v VIDEO for an unprocessed video file'
     print 'averageColour.py -f create picture from frames folder'
     print 'averageColour.py -a to provide a colour array'
-    print 'prints the average colour of each frame of video in a picture.'
+    print 'prints the average colour of each frame of video in a picture.\n'
