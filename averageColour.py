@@ -71,6 +71,9 @@ def createColourBars(aveArray, folder, total=0, gradient_magnitude=0.9):
   print(termcolours.YELLOW + 'Creating Picture' + termcolours.NC)
   folder = folder + '/images'
 
+  if not os.path.exists(folder):
+    os.makedirs(folder)
+
   if total == 0:
     total = len(aveArray)
 
