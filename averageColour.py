@@ -49,7 +49,10 @@ def averageFrameColour(frame):
 
 
 def calculateTimes(inTime, subTime):
-  return str(times[inTime] - times[subTime]).split('.', 2)[0]
+  try:
+    return str(times[inTime] - times[subTime]).split('.', 2)[0]
+  except KeyError:
+    return 'None'
 
 
 def displayTimes(times):
