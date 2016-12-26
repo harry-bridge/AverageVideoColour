@@ -1,4 +1,4 @@
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFont
 from time import strftime
 import numpy
 import os
@@ -18,6 +18,7 @@ class termcolours:
 
 
 times = dict()
+title = None
 
 
 def averageFrameColour(frame):
@@ -66,7 +67,7 @@ def displayTimes(times):
         termcolours.LRED + calculateTimes('createBars', 'averageColour') + termcolours.NC)
 
 
-def createColourBars(aveArray, folder, total=0):
+def createColourBars(aveArray, folder, total=0, gradient_magnitude=0.9):
   print(termcolours.YELLOW + 'Creating Picture' + termcolours.NC)
   folder = folder + '/images'
 
@@ -82,6 +83,7 @@ def createColourBars(aveArray, folder, total=0):
   for i, ave in enumerate(aveArray):
     bars.line((i, 0, i, height), fill=ave)
 
+    # Progress counter
     sys.stdout.write("\rDone bar %d of %d" % (i, total))
     sys.stdout.flush()
 
@@ -92,8 +94,45 @@ def createColourBars(aveArray, folder, total=0):
   resizeImage = baseImage.resize((2000, 1000), Image.NEAREST)
   resizeImage.save(folder + '/resizeBars_' + name + '.png', 'PNG')
 
+  gradient_magnitude = 1 / gradient_magnitude
+
+  width, height = resizeImage.size
+
+  # Create gradient on image
+  gradient = Image.new('L', (1, height), color=0xFF)
+
+  for y in range(height):
+    gradVal = max(255 - abs(y - height), 255 - y)
+    gradient.putpixel((0, y), int(gradVal * (gradient_magnitude)))
+
+  alpha = gradient.resize(resizeImage.size)
+  blackImage = Image.new('RGBA', (width, height))  # Create a black image
+  blackImage.putalpha(alpha)
+  gradientImage = Image.alpha_composite(resizeImage, blackImage)
+  gradientImage.save(folder + '/gradBars_' + name + '.png', 'PNG')
+
+  # Create Borders
+  # Side borders, bottom border
+  border = [20, 100]
+  borderImage = Image.new(
+      'RGB', (width + (border[0] * 2), height + border[0] + border[1]), (250, 250, 250))
+  borderImage.paste(gradientImage, (border[0], border[0], border[0] + width, border[0] + height))
+
+  if title is None:
+    titleText = name.title()
+  else:
+    titleText = title
+
+  font = ImageFont.truetype("fonts/Roboto-Thin.ttf", 50)
+  textImage = ImageDraw.Draw(borderImage)
+  textSize = textImage.textsize(titleText, font)
+  textImage.fontmode = '0'
+  textImage.text(((borderImage.size[0] / 2) - (textSize[0] / 2), height +
+                  border[0] + (border[1] / 2) - (textSize[1] / 2)), titleText, (0, 0, 0), font=font)
+  borderImage.save(folder + '/borderedBars_' + name + '.png', 'PNG')
+
   # Extra spaces to overwrite previous output
-  print(termcolours.GREEN + '\rDone Picture                     ' + termcolours.NC)
+  print(termcolours.GREEN + '\rDone Pictures                     ' + termcolours.NC)
 
   times['createBars'] = datetime.datetime.now()
   displayTimes(times)
@@ -145,16 +184,28 @@ def processVideoDir(filename):
   readFramesFolder(outFolder)
 
 
+def checkTitle():
+  if ('-t' in sys.argv):
+    title = sys.argv[4]
+  else:
+    title = None
+
+  return title
+
+
 if __name__ == '__main__':
   times['startTime'] = datetime.datetime.now()
   if len(sys.argv) > 1 and ('-v' in sys.argv):
+    title = checkTitle()
     processVideoDir(sys.argv[2])
 
   elif len(sys.argv) > 1 and ('-f' in sys.argv):
+    title = checkTitle()
     folder = 'output/' + sys.argv[2]
     readFramesFolder(folder)
 
   elif len(sys.argv) > 1 and ('-a' in sys.argv):
+    title = checkTitle()
     folder = 'output/' + sys.argv[2]
     with open(folder + '/aveArray.json') as data_file:
       data = json.load(data_file)
