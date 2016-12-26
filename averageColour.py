@@ -169,7 +169,7 @@ def splitVideo(outFolder, filename, startNum):
 
 
 def processVideoDir(filename):
-  foldername = re.split('\\.|\\/', filename)[1].title()
+  foldername = re.split('\\.|\\/', filename)[1].lower()
   outFolder = 'output/' + foldername
   startNum = 0
 
