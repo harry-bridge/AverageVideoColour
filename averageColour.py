@@ -1,6 +1,5 @@
 from PIL import Image, ImageDraw, ImageFont
 from time import strftime
-import numpy
 import os
 import sys
 import subprocess
