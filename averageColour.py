@@ -116,8 +116,9 @@ def createColourBars(aveArray, folder, total=0, gradient_magnitude=0.9):
   # Create Borders
   # Side borders, bottom border
   border = [20, 100]
+  bColour = 235
   borderImage = Image.new(
-      'RGB', (width + (border[0] * 2), height + border[0] + border[1]), (250, 250, 250))
+      'RGB', (width + (border[0] * 2), height + border[0] + border[1]), (bColour, bColour, bColour))
   borderImage.paste(gradientImage, (border[0], border[0], border[0] + width, border[0] + height))
 
   if title is None:
@@ -130,7 +131,7 @@ def createColourBars(aveArray, folder, total=0, gradient_magnitude=0.9):
   textSize = textImage.textsize(titleText, font)
   textImage.fontmode = '0'
   textImage.text(((borderImage.size[0] / 2) - (textSize[0] / 2), height +
-                  border[0] + (border[1] / 2) - (textSize[1] / 2)), titleText, (0, 0, 0), font=font)
+                  border[0] + (border[1] / 2) - (textSize[1] / 2)), titleText, (255 - bColour, 255 - bColour, 255 - bColour), font=font)
   borderImage.save(folder + '/borderedBars_' + name + '.png', 'PNG')
 
   # Extra spaces to overwrite previous output
