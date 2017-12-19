@@ -1,4 +1,4 @@
-#Average Video Colour
+# Average Video Colour
 
 Takes each frame of a given video and compresses its average color into a single vertical line, creating a timeline of the spectrum of colors used throughout each video
 
@@ -9,7 +9,7 @@ Takes each frame of a given video and compresses its average color into a single
 <img src="samples/borderedBars_incredibles.png" />
 
 
-##Installation
+## Installation
 
 Installation is very simple. You will need Python, obviously then first install the pip requirements with:
 
@@ -21,7 +21,7 @@ You will also need the *'ffmpg'* library which for mac users can be installed wi
 
 `brew install ffmpg`
 
-##Usage
+## Usage
 
 To generate a colour timeline place a video in the **'video'** folder and run (for a video file named 'test.mp4'):
 
