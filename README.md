@@ -2,7 +2,7 @@
 
 Takes each frame of a given video and compresses its average color into a single vertical line, creating a timeline of the spectrum of colors used throughout each video
 
-##Sample Images
+## Sample Images
 
 <img src="samples/borderedBars_aladdin.png" />
 
